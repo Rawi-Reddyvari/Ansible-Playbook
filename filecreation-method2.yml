@@ -5,4 +5,4 @@
   - name: test file creation
     file: 
       path: "/opt/Hello-Cloudgen"
-      state: touch
+      state: present
