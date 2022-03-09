@@ -4,7 +4,7 @@
   tasks:
   - name: Create a new file with permissions
     file:
-      path: "/root/test"
+      path: "/your path"
       state: touch
       mode: 0755
       owner: test
