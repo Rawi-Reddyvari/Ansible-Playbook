@@ -1,0 +1,13 @@
+syntax: 
+1: docker attach container-id.container-name
+Example: docker attach (first 2 characters).container-name
+
+syntax:
+  2: yum update -y
+  3: yum install git -y
+   docker run -itd --name git1 gitserver /bin/bash
+   docker run -itd --name git2 gitserver /bin/bash
+   docker run -itd --name git3 gitserver /bin/bash
+   docker run -itd --name git4 gitserver /bin/bash
+   docker run -itd --name git5 gitserver /bin/bash
+   

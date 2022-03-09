@@ -1,0 +1,583 @@
+
+Creating an Empty File
+The fastest way to create an empty file is by using Ansible’s file module.
+
+Add the following configuration to your Ansible playbook:
+
+---
+
+- hosts: all
+  tasks:
+  - name: Creating an empty file
+    file:
+      path: "/your path"
+      state: touch
+*************************************************************************************
+---
+
+- hosts: all
+  tasks:
+  - name: Creating a file with content
+    copy:
+      dest: "/your path"
+      content: |
+        line 01
+        line 02
+
+
+
+*************************************************************************************
+Creating Multiple Files
+You can create multiple files by using a single task in an Ansible playbook.
+
+Use the following configuration to create multiple files:
+
+---
+
+- hosts: all
+  tasks:
+  - name: Create multiple files
+    file: 
+      path: "{{ item }}"
+      state: touch
+    with_items:
+    - test01.txt
+    - test02.txt
+    - test03.txt
+    - test04.txt
+
+In the configuration file above, we defined:
+
+path: The "{{ item }}" value means that Ansible will create a separate path for each respective file. By default, these files go in the Home folder of the remote host. Define a different path by using /your_folder_path/"{{ item }}".
+with_items: This parameter is used to start a list of files to create. List as many files as you want. In our example, we created a list of four files titled test.
+
+
+
+*************************************************************************************
+Creating a Directory
+Creating a new directory uses the same configuration as when creating an empty file. The only difference is that under the state parameter, you enter directory as the value:
+
+---
+
+- hosts: all
+  tasks:
+  - name: Creating a new directory
+    file:
+      path: "/your path"
+      state: directory
+
+
+
+*************************************************************************************
+
+Removing Files
+Ansible playbooks can also remove existing files. To do this, set the state parameter to absent:
+
+---
+
+- hosts: all
+  tasks:
+  - name: Removing a file
+    file:
+      path: "/your path"
+      state: absent
+
+If the file is already removed, this command does nothing.
+
+
+
+*************************************************************************************
+
+Setting File Permissions
+With all of the examples above, you can also set the permission for new files and folders. For this, you need to use the mode parameter.
+
+There are two ways to do this:
+
+Using octal mode format: You can use octal numbers, like 0644 or 0777. Don’t forget the leading 0, as leaving it out can lead to unexpected results.
+Using symbolic mode format: You can use values like u=rwx, g=rx, or o=rx, where u stands for owner, g stands for group, and o stands for others. The permissions are defined as r for read, w for write, and x for execute.
+For example, you can use the octal value 0755, while defining the owner:
+
+---
+
+- hosts: all
+  tasks:
+  - name: Create a new file with permissions
+    file:
+      path: "/your path"
+      state: touch
+      mode: 0755
+      owner: test
+
+You can also use the symbolic equivalent to 0755:
+
+
+*************************************************************************************
+
+---
+
+- hosts: all
+  tasks:
+  - name: Create a new file with permissions
+    file:
+      path: "/your path"
+      state: touch
+      mode: u=rwx,g=rx,o=rx
+      owner: test
+
+
+
+*************************************************************************************
+
+- hosts: all
+  tasks:
+  - name: Ansible create file if it doesn't exist example
+    file:
+      path: "/Users/mdtutorials2/Documents/Ansible/devops_server.txt"
+      state: touch
+
+
+
+*************************************************************************************
+- hosts: all
+  tasks:
+  - name: Ansible create file with content example
+    copy:
+      dest: "/Users/mdtutorials2/Documents/Ansible/remote_server.txt"
+      content: |
+        dog1
+        tiger
+
+
+
+
+
+*************************************************************************************
+- hosts: all
+  tasks:
+  - name: Ansible create new file with permissions example.
+    file:
+      path: "/Users/mdtutorials2/Documents/Ansible/devops.txt"
+      state: touch
+      mode: 0777
+      owner: mdtutorials2
+
+
+
+*************************************************************************************
+
+- hosts: all
+  tasks:
+  - name: Ansible create multiple files example
+    file: 
+      path: "{{ item }}"
+      state: touch
+      mode: 0775
+    with_items:
+    - int1.txt
+    - int2.txt
+    - int3.txt
+    - int4.txt
+
+
+
+*************************************************************************************
+
+- hosts: all
+ 
+  tasks:
+  - name : Create a File with Content
+    copy:
+        dest: /opt/myfile.txt
+        content: |
+          This is first line
+          This is second line
+
+*************************************************************************************
+
+- hosts: all
+ 
+  tasks:
+  - name: Create Multiple Files
+    file: path={{"/opt/"}} state=touch
+    loop: [file1.txt, file2.txt, file3.txt, file4.txt]
+*************************************************************************************
+
+- hosts: all
+ 
+  tasks:
+  - name: Create a Directory
+    file: path="/opt/dir1" state=directory
+
+
+*************************************************************************************
+
+- hosts: all
+ 
+  tasks:
+  - name: Delete a Directory
+    file: path="/opt/dir1" state=absent
+*************************************************************************************
+
+- hosts: all
+ 
+  tasks:
+  - name: Change Wwnership & Permissions of a Directory
+    file: path=/opt/mydir state=directory owner="{{ ansible_user }}" group="{{ ansible_user }}" mode=744 recurse=true
+    register: file_output
+  - debug: var=file_output
+
+*************************************************************************************
+
+- hosts: all
+ 
+  tasks:
+  - name: Change Ownership & Permissions of a Directory
+    file: path=/opt/mydir state=directory owner="www-data" group="www-data" mode=744 recurse=true become=true
+    register: file_output
+  - debug: var=file_output
+*************************************************************************************
+- hosts: all
+ 
+  tasks:
+  - name: Create a Symlink
+    file: src=/etc/apache2/sites-available/wordpress.conf dest=/etc/apache2/sites-enabled/wordpress.conf state=link
+    register: file_output
+  - debug: var=file_output
+
+
+*************************************************************************************
+---
+- name: copy module demo
+  hosts: all
+  vars:
+    myfile: "{{ ~/example.txt }}"
+  tasks:
+  - name: create a text file
+    ansible.builtin.copy:
+      dest: "{{ myfile }}"
+      content: |
+        line 1
+        line 2 
+
+
+*************************************************************************************
+
+
+
+- hosts: all
+  tasks:
+  - name: Ansible create multiple files example
+    file: 
+      path: "{{ item.location }}"
+      state: touch
+      mode: "{{ item.mode }}"
+    with_items:
+    - { location: 'int5.txt',mode: '0566'}
+    - { location: 'int6.txt',mode: '0766'}
+
+*************************************************************************************
+
+- hosts: all
+ 
+  tasks:
+  - name : Create an Empty File
+    file: path=/opt/myfile.txt state=touch
+
+Save and close the file when you are finished.
+
+Where:
+
+hosts : Defines a single or group of hosts from the Ansible inventory file.
+tasks : Declares that remote hosts want to perform a task.
+name : Defines a name of the task you want to perform.
+file : Name of the module used to perform the task.
+path : Defines the path on the remote hosts where you want to create a file.
+state : Run touch command to create an empty file.
+
+*************************************************************************************
+
+
+
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: Update apt cache and make sure Vim is installed
+      apt:
+        name: vim
+        update_cache: yes
+
+**************************************
+
+---
+- hosts: all
+  become: yes
+  vars:
+    page_title: My Landing Page
+    page_description: This is my landing page description.
+  tasks:
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: latest
+
+    - name: Apply Page Template
+      template:
+        src: files/landing-page.html.j2
+        dest: /var/www/html/index.nginx-debian.html
+
+    - name: Allow all access to tcp port 80
+      ufw:
+        rule: allow
+        port: '80'
+        proto: tcp    
+
+********************************************************************
+
+---
+- hosts: all
+  vars:
+    - create_user_file: yes
+    - user: sammy  
+  tasks:
+    - name: create file for user
+      file:
+        path: /home/{{ user }}/myfile
+        state: touch
+      when: create_user_file
+
+
+**************************************************************************
+---
+- hosts: all
+  tasks:
+    - name: Print message
+      debug:
+        msg: Hello Ansible World
+
+
+*****************************************************************************
+
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: Update apt cache and make sure Vim, Curl and Unzip are installed
+      apt:
+        name: "{{ item }}"
+        update_cache: yes
+      loop:
+        - vim
+        - curl
+        - unzip
+
+
+
+
+*****************************************************************************
+
+---
+- hosts: all
+  become: yes
+  vars:
+    page_title: My Second Landing Page
+    page_description: This is my second landing page description.
+    doc_root: /var/www/mypage
+
+  tasks:
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: latest
+
+    - name: Make sure new doc root exists
+      file:
+        path: "{{ doc_root }}"
+        state: directory
+        mode: '0755'
+
+    - name: Apply Page Template
+      template:
+        src: files/landing-page.html.j2
+        dest: "{{ doc_root }}/index.html"
+
+    - name: Replace document root on default Nginx configuration
+      replace:
+        path: /etc/nginx/sites-available/default
+        regexp: '(\s+)root /var/www/html;(\s+.*)?$'
+        replace: \g<1>root {{ doc_root }};\g<2>
+      notify: Restart Nginx
+
+    - name: Allow all access to tcp port 80
+      ufw:
+        rule: allow
+        port: '80'
+        proto: tcp
+
+  handlers:
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted
+
+
+
+*****************************************************************************
+
+
+---
+- hosts: all
+  tasks:
+    - name: print facts
+      debug:
+        msg: "IPv4 address: {{ ansible_default_ipv4.address }}"
+
+*****************************************************************************
+
+
+---
+- hosts: all
+  vars:
+    - username: sammy
+    - home: /home/sammy   
+  tasks:
+    - name: print variables
+      debug:
+        msg: "Username: {{ username }}, Home dir: {{ home }}"
+*****************************************************************************
+
+---
+- hosts: all
+  become: yes
+  tasks:      
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+      
+
+
+*****************************************************************************
+
+
+---
+- hosts: all
+  vars:
+    - user: sammy
+  tasks:
+    - name: Check if file already exists
+      command: ls /home/{{ user }}/myfile
+      register: file_exists
+      ignore_errors: yes
+
+    - name: create file for user
+      file:
+        path: /home/{{ user }}/myfile
+        state: touch
+      when: file_exists is failed
+
+    - name: show message if file exists
+      debug:
+        msg: The user file already exists.
+      when: file_exists is succeeded
+
+
+
+*****************************************************************************
+
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: creates sammy's file
+      become_user: sammy
+      file:
+        path: /tmp/ansible_sammy
+        state: touch
+
+    - name: creates erika's file
+      become_user: erika
+      file:
+        path: /tmp/ansible_erika
+        state: touch
+
+*****************************************************************************
+---
+- hosts: all
+  tasks:
+    - name: creates users files
+      file:
+        path: /tmp/ansible-{{ item }}
+        state: touch
+      loop:
+        - sammy
+        - erika
+        - brian
+
+
+
+*****************************************************************************
+
+
+
+
+
+
+
+
+
+
+*****************************************************************************
+
+
+
+
+
+
+
+
+
+
+
+
+
+*****************************************************************************
+
+
+
+
+
+
+
+
+
+
+*****************************************************************************
+
+
+
+
+
+
+
+
+
+
+
+*****************************************************************************
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+*****************************************************************************
