@@ -4,6 +4,5 @@
   tasks:
   - name: Creating a new directory
     file:
-      path: "/your path"
+      path: "/opt/Rawi"
       state: directory
-      
