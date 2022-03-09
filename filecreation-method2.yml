@@ -6,3 +6,6 @@
     file: 
       path: "/opt/Hello-Cloudgen"
       state: present
+
+      # it didn't work as the state : PRESENT is not taken by the system
+      
